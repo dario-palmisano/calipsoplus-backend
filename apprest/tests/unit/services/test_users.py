@@ -20,15 +20,25 @@ class UserServiceTestCase(CalipsoTestCase):
 
         request = HttpRequest()
         request.method = 'GET'
-        #request.META['HTTP_EAAHASH'] = eaa_hash
-        #request.META["HTTP_UID"] = uid
-        request.META['EAAHash'] = eaa_hash
+
+        request.META["EAAHash"] = eaa_hash
         request.META["uid"] = uid
 
         json_umbrella_meta = self.user_service.get_umbrella_session_hash(request)
 
-        self.assertEqual(json_umbrella_meta.get('uid'), uid)
-        self.assertEqual(json_umbrella_meta.get('EAAHash'), eaa_hash)
+        self.assertEqual(json_umbrella_meta.get("uid"), uid)
+        self.assertEqual(json_umbrella_meta.get("EAAHash"), eaa_hash)
+
+	del request.META["EAAHash"]
+	del request.META["uid"]
+
+        request.META["HTTP_EAAHASH"] = eaa_hash
+        request.META["HTTP_UID"] = uid
+
+        json_umbrella_meta = self.user_service.get_umbrella_session_hash(request)
+
+        self.assertEqual(json_umbrella_meta.get("HTTP_UID"), uid)
+        self.assertEqual(json_umbrella_meta.get("HTTP_EAAHASH"), eaa_hash)
 
     def test_lookup_none_existing_umbrella_hash(self):
         self.logger.debug('#################### test_lookup_existing_umbrella_hash ####')
